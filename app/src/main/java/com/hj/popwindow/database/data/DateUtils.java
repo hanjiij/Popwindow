@@ -46,9 +46,10 @@ public class DateUtils {
 
    private static int [] getDrawable()
    {
-       int [] icon={R.drawable.ag,R.drawable.ag,R.drawable.ag,
-               R.drawable.ag,R.drawable.ag, R.drawable.ag,
-               R.drawable.ag,R.drawable.ag,R.drawable.ag,R.drawable.ag,R.drawable.ag};
+       int [] icon={R.drawable.icon_func_wifi,R.drawable.icon_func_net,R.drawable.icon_func_buletooth,
+               R.drawable.icon_func_screen,R.drawable.icon_func_light, R.drawable.icon_func_system,
+               R.drawable.icon_func_app,R.drawable.icon_func_hotspot,R.drawable.icon_func_air,
+               R.drawable.icon_func_mute,R.drawable.icon_func_gps};
        return icon;
    }
 
@@ -86,6 +87,7 @@ public class DateUtils {
 //            }
 //        }
 //    }
+    
     /**
      * @param context 环境
      * @return    List<MFunction> list
