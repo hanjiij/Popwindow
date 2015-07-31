@@ -32,7 +32,18 @@ public class MAPP {
 		DBHelper db = DBHelper.getInstance(ctx);
 		db.insertConfig(appStyle);
 	}
-	
+
+	public static boolean upDateMyApp(Context context,String index, String packageName, String Name, byte[] icon)
+	{
+		try {
+			DBHelper db = DBHelper.getInstance(context);
+			db.updateMyApp(index,packageName,Name,icon);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	public static List<MAPP> getApps(Context ctx){
 		DBHelper db = DBHelper.getInstance(ctx);
 		List<ContentValues> cv_List = db.findMyApps();
@@ -49,5 +60,18 @@ public class MAPP {
 		}
 		return app_list;
 	}
+
+	public static boolean delMyApp(Context context,int index,List<MAPP> list)
+	{
+		try {
+			DBHelper db = DBHelper.getInstance(context);
+			db.delMyApp(index,list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 	
 }

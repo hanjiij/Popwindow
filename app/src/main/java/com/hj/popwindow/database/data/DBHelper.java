@@ -1,18 +1,16 @@
 package com.hj.popwindow.database.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONObject;
-
-
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static DBHelper mInstance = null;
@@ -149,7 +147,21 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+
+//    //得到所有常用功能
+//    public final Cursor getAllFunction()
+//    {
+//        SQLiteDatabase db = getWritableDatabase();
+//        Cursor cursor=null;
+//        cursor=db.rawQuery("select * from function",null);
+////        if (cursor.moveToFirst())
+////        {
+////            return cursor;
+////        }
+//        return cursor;
+//    }
     //通过Id得到功能
+
     public final ContentValues findFunctionById(int id) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -206,6 +218,109 @@ public class DBHelper extends SQLiteOpenHelper {
             db.close();
             return false;
         }
+    }
+
+    /**
+     * 删除一个常用App
+     * @param index	常用App的删除位置 1~8
+     * @param apps	当前常用App集合
+     * @return
+     */
+    public boolean delMyApp(int index , List<MAPP> apps){
+        SQLiteDatabase db = getWritableDatabase();
+        String packageName = null;
+        String name = null;
+        byte[] icon = null;
+        String packageIndex;
+        String nameIndex;
+        String iconIndex;
+        try {
+            for (int i = index; i < apps.size(); i++) {
+                MAPP app = apps.get(i);
+                packageName = app.packageName;
+                name = app.name;
+                icon = app.icon;
+
+                packageIndex = "AppPackage" + i;
+                nameIndex = "AppName" + i;
+                iconIndex = "AppIcon" + i;
+
+                ContentValues cv = new ContentValues();
+                cv.put(packageIndex, packageName);
+                cv.put(nameIndex, name);
+                cv.put(iconIndex, icon);
+                db.update("config",cv,null,null);
+            }
+            packageName = null;
+            icon = null;
+            name = null;
+            packageIndex = "AppPackage" + apps.size();
+            nameIndex = "AppName" + apps.size();
+            iconIndex = "AppIcon" + apps.size();
+            ContentValues cv_end = new ContentValues();
+            cv_end.put(packageIndex, packageName);
+            cv_end.put(iconIndex, icon);
+            cv_end.put(nameIndex, name);
+            db.update("config", cv_end, null, null);
+
+        } catch (Exception e) {
+            db.close();
+            return false;
+        }
+        db.close();
+        return true;
+    }
+
+    //删除常用功能
+    public boolean delFunction(int index,List<MFunction> list)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+//        String name=null;
+        int id=0;
+//        int icon=0;
+        String fundelIndex;
+        try {
+            for (int i=index;i<list.size();i++)
+            {
+                MFunction mFunction=list.get(i);
+//                name=mFunction.name;
+                id=mFunction.id;
+//                icon=mFunction.icon;
+
+//                ContentValues contentValues=new ContentValues();
+//                contentValues.put("id",id);
+//                contentValues.put("name",name);
+//                contentValues.put("icon",icon);
+//                db.update("function", contentValues, null, null);
+
+                fundelIndex="MyFunction"+i;
+                ContentValues cv = new ContentValues();
+                cv.put(fundelIndex, id);
+                db.update("config", cv, null, null);
+            }
+
+//            name=null;
+//            id=-1;
+//            icon=-1;
+//            ContentValues funValues=new ContentValues();
+//            funValues.put("id",id);
+//            funValues.put("name",name);
+//            funValues.put("icon",icon);
+//            db.update("function", funValues, null, null);
+
+            db.delete("function","id like ?",new String[]{index+""});
+
+            fundelIndex="MyFunction"+list.size();
+            ContentValues cv_end = new ContentValues();
+            cv_end.put(fundelIndex,"");
+            db.update("config",cv_end,null,null);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+      return true;
     }
 
     //获得推广/搜索的App信息
@@ -387,10 +502,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 cv.put("AppPackage8", "");
                 cv.put("AppIcon8", "");
 
-                cv.put("AppName9", "");
-                cv.put("AppPackage9", "");
-                cv.put("AppIcon9", "");
-
                 cv.put("MyFunction1", "");
                 cv.put("MyFunction2", "");
                 cv.put("MyFunction3", "");
@@ -457,7 +568,7 @@ public class DBHelper extends SQLiteOpenHelper {
         try {
             c = db.rawQuery("select * from config", new String[]{});
             if (c.moveToFirst()) {
-                for (int i = 1; i < 10; i++) {
+                for (int i = 1; i < 9; i++) {
                     String packageIndex = "AppPackage" + i;
                     String nameIndex = "AppName" + i;
                     String iconIndex = "AppIcon" + i;
@@ -484,7 +595,6 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return cv_list;
     }
-
 
     //得到已设置的常用功能
     public final List<Integer> findFunctionIds() {

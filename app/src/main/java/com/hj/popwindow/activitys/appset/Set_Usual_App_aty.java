@@ -25,6 +25,7 @@ import com.hj.popwindow.util.Util_MyDataBase;
 import com.hj.popwindow.view.MyGridView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Set_Usual_App_aty
@@ -142,11 +143,14 @@ public class Set_Usual_App_aty
 
                         appInfoDialogList.remove(position);  // 将弹出框中添加到常用的那一项删除，防止重复出现
 
-                        if (index!=usual_app_info_list.size()) {
+                        if (index!=(usual_app_info_list.size()-1)) {
                             appInfoDialogList.add(usual_app_info_list.get(index));
                         }
 
+                        Collections.sort(appInfoDialogList);
+
                         setUsualAppListData();
+
                         app_GridView_Dialog.cancel();
 
 //                        if (usual_app_info_list.size() != 0) {  // 移除最后一个默认appInfo
@@ -222,29 +226,37 @@ public class Set_Usual_App_aty
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                // 删除常用app，则将他添加到弹出框列表中
+                appInfoDialogList.add(usual_app_info_list.get(position));
+                Collections.sort(appInfoDialogList);  // 对链表排序
+                myAppInfoDialogAdapter.NotifyDataSetChanged(appInfoDialogList);
 
-                // 删除面板中的快捷入口，将删除的重新添加到弹出框列表中
-                //  appInfoDialogList.add(select_AppInfoList.get(position));
-                appInfoDialogList.add(Util_MyDataBase
-                        .Get_Package_Name_To_AppInfo(Set_Usual_App_aty.this,
-                                usual_app_info_list.get(position)
-                                        .getPackageName()));
+                DateUtils.delMyApp(Set_Usual_App_aty.this,position+1);
 
-                Util_MyDataBase.DeleteDatabase(Set_Usual_App_aty.this,
-                        usual_app_info_list.get(position).getPackageName());
+                setUsualAppListData();
 
-
-                usual_app_info_list.remove(position);
-
-                if (usual_app_info_list.size() == 7 &&
-                        !usual_app_info_list.get(usual_app_info_list.size() - 1)
-                                .getAppName()
-                                .equals("")) {
-                    usual_app_info_list.add(default_app_info);
-                }
-
-                usual_app_myAppInfoAdapter
-                        .NotifyDataSetChanged(usual_app_info_list);
+//                // 删除面板中的快捷入口，将删除的重新添加到弹出框列表中
+//                //  appInfoDialogList.add(select_AppInfoList.get(position));
+//                appInfoDialogList.add(Util_MyDataBase
+//                        .Get_Package_Name_To_AppInfo(Set_Usual_App_aty.this,
+//                                usual_app_info_list.get(position)
+//                                        .getPackageName()));
+//
+//                Util_MyDataBase.DeleteDatabase(Set_Usual_App_aty.this,
+//                        usual_app_info_list.get(position).getPackageName());
+//
+//
+//                usual_app_info_list.remove(position);
+//
+//                if (usual_app_info_list.size() == 7 &&
+//                        !usual_app_info_list.get(usual_app_info_list.size() - 1)
+//                                .getAppName()
+//                                .equals("")) {
+//                    usual_app_info_list.add(default_app_info);
+//                }
+//
+//                usual_app_myAppInfoAdapter
+//                        .NotifyDataSetChanged(usual_app_info_list);
             }
         });
 

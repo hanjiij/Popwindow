@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -113,6 +115,9 @@ public class Set_Usual_Function_aty
 
                 setFunctionDatas();
 
+                shortcut_select_list.remove(position);
+                shortcut_select_adapter.NotifyDataSetChanged(shortcut_select_list);
+
                 shortcut_select_dialog.cancel();
             }
         });
@@ -131,8 +136,10 @@ public class Set_Usual_Function_aty
                             @Override
                             public void onPosition(int position) {
 
-                                Toast.makeText(Set_Usual_Function_aty.this, position + "",
-                                        Toast.LENGTH_SHORT).show();
+                                Confirm_delete(position);
+
+//                                Toast.makeText(Set_Usual_Function_aty.this, position + "",
+//                                        Toast.LENGTH_SHORT).show();
                             }
                         }, false);
 
@@ -179,6 +186,37 @@ public class Set_Usual_Function_aty
         shortcut_select_dialog.show();
     }
 
+
+    /**
+     * 弹出确认删除快捷入口dialog
+     *
+     * @param position 删除的位置信息
+     */
+    private void Confirm_delete(final int position) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(Set_Usual_Function_aty.this);
+
+        alert.setMessage("是否要删除此快捷方式");
+
+        alert.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                DateUtils.delFunction(Set_Usual_Function_aty.this, position + 1);
+
+//                shortcut_select_list.add(functionInfoList.get(position));
+
+                setFunctionDatas();
+
+//                shortcut_select_adapter.NotifyDataSetChanged(shortcut_select_list);
+            }
+        });
+
+        alert.setNegativeButton("取消", null);
+
+        alert.show();
+    }
+
+
     /**
      * 设置弹出框中常用快捷键数据
      */
@@ -196,7 +234,9 @@ public class Set_Usual_Function_aty
         for (int i = 0; i < shortcut_select_list.size(); i++) { // 过滤重复项
 
             for (int j = 0; j < functionInfoList.size(); j++) {
-                if (shortcut_select_list.get(i).getId()==functionInfoList.get(j).getId()) {
+                
+                if (shortcut_select_list.get(i).getId()==(functionInfoList.get(j).getId()-1)) {
+
                     shortcut_select_list.remove(i);
                 }
             }
@@ -230,6 +270,7 @@ public class Set_Usual_Function_aty
     private void setFunctionDatas() {
 
         if (functionInfoList.size() != 0) {
+
             functionInfoList.clear();
         }
 
@@ -271,75 +312,71 @@ public class Set_Usual_Function_aty
         jinying_bt = (Button) findViewById(R.id.jinying_bt);
         gps_bt = (Button) findViewById(R.id.gps_bt);
 
+        setFlashLight = new SetFlashLight();   // 手电筒开关类
 
-//        setWiFI = new SetWiFI(Set_Usual_Function_aty.this);  // wifi开关类
-//        setGprs = new SetGprs(Set_Usual_Function_aty.this);  // 数据流量开关
-//        setFlashLight = new SetFlashLight();   // 手电筒开关类
-//        setSilent = new SetSilent(Set_Usual_Function_aty.this);
-//
-//
-//        setBlueTooth = new SetBlueTooth(new SetBlueTooth.SuccessEnable() {
-//            @Override
-//            public void onSuccess(String state) {
-//
-//                Toast.makeText(Set_Usual_Function_aty.this, state, Toast.LENGTH_SHORT).show();
-//            }
-//        }, new SetBlueTooth.FailEnable() {
-//            @Override
-//            public void onFail(String err) {
-//
-//                Toast.makeText(Set_Usual_Function_aty.this, err, Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//
-//        setScreenShot =
-//                new SetScreenShot(Set_Usual_Function_aty.this, new SetScreenShot.SuccessEnable() {
-//                    @Override
-//                    public void onSuccess(final String state) {
-//
-//                        Toast.makeText(Set_Usual_Function_aty.this, state, Toast.LENGTH_SHORT)
-//                                .show();
-//                    }
-//                }, new SetScreenShot.FailEnable() {
-//                    @Override
-//                    public void onFail(final String err) {
-//
-//                        Toast.makeText(Set_Usual_Function_aty.this, err, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//
-//
-//        setHotSpot = new SetHotSpot(Set_Usual_Function_aty.this, new SetHotSpot.SuccessEnable() {
-//            @Override
-//            public void onSuccess(String state) {
-//
-//                Toast.makeText(Set_Usual_Function_aty.this, state, Toast.LENGTH_SHORT).show();
-//            }
-//        }, new SetHotSpot.FailEnable() {
-//            @Override
-//            public void onFail(String err) {
-//
-//                Toast.makeText(Set_Usual_Function_aty.this, err, Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        setFlightMode = new SetFlightMode(Set_Usual_Function_aty.this,
-//                new SetFlightMode.SuccessEnable() {
-//                    @Override
-//                    public void onSuccess(final String state) {
-//
-//                        Toast.makeText(Set_Usual_Function_aty.this, state,
-//                                Toast.LENGTH_SHORT).show();
-//
-//                    }
-//                }, new SetFlightMode.FailEnable() {
-//            @Override
-//            public void onFail(final String err) {
-//
-//                Toast.makeText(Set_Usual_Function_aty.this, err, Toast.LENGTH_SHORT).show();
-//            }
-//        });
+
+        setBlueTooth = new SetBlueTooth(new SetBlueTooth.SuccessEnable() {
+            @Override
+            public void onSuccess(int state) {
+
+                Toast.makeText(Set_Usual_Function_aty.this, state+"", Toast.LENGTH_SHORT).show();
+            }
+        }, new SetBlueTooth.FailEnable() {
+            @Override
+            public void onFail(int err) {
+
+                Toast.makeText(Set_Usual_Function_aty.this, err+"", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        setScreenShot =
+                new SetScreenShot(Set_Usual_Function_aty.this, new SetScreenShot.SuccessEnable() {
+                    @Override
+                    public void onSuccess(final int state) {
+
+                        Toast.makeText(Set_Usual_Function_aty.this, state+"", Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                }, new SetScreenShot.FailEnable() {
+                    @Override
+                    public void onFail(final int err) {
+
+                        Toast.makeText(Set_Usual_Function_aty.this, err+"", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+        setHotSpot = new SetHotSpot(Set_Usual_Function_aty.this, new SetHotSpot.SuccessEnable() {
+            @Override
+            public void onSuccess(int state) {
+
+                Toast.makeText(Set_Usual_Function_aty.this, state+"", Toast.LENGTH_SHORT).show();
+            }
+        }, new SetHotSpot.FailEnable() {
+            @Override
+            public void onFail(int err) {
+
+                Toast.makeText(Set_Usual_Function_aty.this, err+"", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        setFlightMode = new SetFlightMode(Set_Usual_Function_aty.this,
+                new SetFlightMode.SuccessEnable() {
+                    @Override
+                    public void onSuccess(final int state) {
+
+                        Toast.makeText(Set_Usual_Function_aty.this, state+"",
+                                Toast.LENGTH_SHORT).show();
+
+                    }
+                }, new SetFlightMode.FailEnable() {
+            @Override
+            public void onFail(final int err) {
+
+                Toast.makeText(Set_Usual_Function_aty.this, err+"", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
@@ -347,110 +384,104 @@ public class Set_Usual_Function_aty
      */
     private void setBtListener() {
 
+        wifi_bt.setOnClickListener(new View.OnClickListener() {  // wifi
+            @Override
+            public void onClick(View v) {
 
-//        wifi_bt.setOnClickListener(new View.OnClickListener() {  // wifi
-//            @Override
-//            public void onClick(View v) {
-//
-//                setWiFI.setWifi();
-//            }
-//        });
-//
-//
-//        gprs_bt.setOnClickListener(new View.OnClickListener() {  //数据流量
-//            @Override
-//            public void onClick(View v) {
-//
-//
-//                boolean isopen = setGprs.gprsIsOpenMethod();
-//
-//                setGprs.Open_And_Close_Gprs(isopen);
-//
-//                if (isopen) {
-//
-//                    gprs_bt.setText(getString(R.string.open_gprs));
-//                } else {
-//
-//                    gprs_bt.setText(getString(R.string.close_gprs));
-//                }
-//            }
-//        });
-//
-//        lanya_bt.setOnClickListener(new View.OnClickListener() {   //蓝牙
-//            @Override
-//            public void onClick(View v) {
-//
-//                setBlueTooth.setBlueToothCloseAOpen();
-//            }
-//        });
-//
-//        jieping_bt.setOnClickListener(new View.OnClickListener() {  //截屏
-//            @Override
-//            public void onClick(View v) {
-//
-//                setScreenShot.setScreenShot("/sdcard/screenaaa.jpg");
-//
-//            }
-//        });
-//
-//        shoudian_bt.setOnClickListener(new View.OnClickListener() {  //手电筒
-//            @Override
-//            public void onClick(View v) {
-//
-//                setFlashLight.setLight();
-//
-//            }
-//        });
-//
-//        xitong_bt.setOnClickListener(new View.OnClickListener() {  //系统设置
-//            @Override
-//            public void onClick(View v) {
-//
-//                startActivity(new Intent(Settings.ACTION_SETTINGS));
-//            }
-//        });
-//
-//        xuanfu_bt.setOnClickListener(new View.OnClickListener() {  //悬浮窗设置
-//            @Override
-//            public void onClick(View v) {
-//
-//
-//            }
-//        });
-//
-//        redian_bt.setOnClickListener(new View.OnClickListener() {  //个人热点
-//            @Override
-//            public void onClick(View v) {
-//
-//                setHotSpot.setHot();
-//            }
-//        });
-//
-//        feixing_bt.setOnClickListener(new View.OnClickListener() {  //飞行模式
-//            @Override
-//            public void onClick(View v) {
-//
-//
-//                setFlightMode.setAirplaneModeOn();
-//            }
-//        });
-//        jinying_bt.setOnClickListener(new View.OnClickListener() {  //静音
-//            @Override
-//            public void onClick(View v) {
-//
-//                setSilent.setRingMode();
-//            }
-//        });
-//
-//        gps_bt.setOnClickListener(new View.OnClickListener() {  //gps设置
-//            @Override
-//            public void onClick(View v) {
-//
-//                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-//
-//
-//            }
-//        });
+                SetWiFI.setWifi(Set_Usual_Function_aty.this);
+            }
+        });
+
+
+        gprs_bt.setOnClickListener(new View.OnClickListener() {  //数据流量
+            @Override
+            public void onClick(View v) {
+
+                setGprs.Open_And_Close_Gprs(Set_Usual_Function_aty.this);
+
+                if (setGprs.gprsIsOpenMethod(Set_Usual_Function_aty.this)) {
+
+                    gprs_bt.setText(getString(R.string.open_gprs));
+                } else {
+
+                    gprs_bt.setText(getString(R.string.close_gprs));
+                }
+            }
+        });
+
+        lanya_bt.setOnClickListener(new View.OnClickListener() {   //蓝牙
+            @Override
+            public void onClick(View v) {
+
+                setBlueTooth.setBlueToothCloseAOpen();
+            }
+        });
+
+        jieping_bt.setOnClickListener(new View.OnClickListener() {  //截屏
+            @Override
+            public void onClick(View v) {
+
+                setScreenShot.setScreenShot("/sdcard/screenaaa.jpg");
+
+            }
+        });
+
+        shoudian_bt.setOnClickListener(new View.OnClickListener() {  //手电筒
+            @Override
+            public void onClick(View v) {
+
+                setFlashLight.setLight();
+
+            }
+        });
+
+        xitong_bt.setOnClickListener(new View.OnClickListener() {  //系统设置
+            @Override
+            public void onClick(View v) {
+
+                startActivity(new Intent(Settings.ACTION_SETTINGS));
+            }
+        });
+
+        xuanfu_bt.setOnClickListener(new View.OnClickListener() {  //悬浮窗设置
+            @Override
+            public void onClick(View v) {
+
+
+            }
+        });
+
+        redian_bt.setOnClickListener(new View.OnClickListener() {  //个人热点
+            @Override
+            public void onClick(View v) {
+
+                setHotSpot.setHot();
+            }
+        });
+
+        feixing_bt.setOnClickListener(new View.OnClickListener() {  //飞行模式
+            @Override
+            public void onClick(View v) {
+
+
+                setFlightMode.setAirplaneModeOn();
+            }
+        });
+        jinying_bt.setOnClickListener(new View.OnClickListener() {  //静音
+            @Override
+            public void onClick(View v) {
+
+                SetSilent.setRingMode(Set_Usual_Function_aty.this);
+            }
+        });
+
+        gps_bt.setOnClickListener(new View.OnClickListener() {  //gps设置
+            @Override
+            public void onClick(View v) {
+
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            }
+        });
     }
 
     /**

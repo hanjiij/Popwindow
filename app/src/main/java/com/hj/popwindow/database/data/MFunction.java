@@ -35,11 +35,23 @@ public class MFunction {
 		List<MFunction> func_list = new ArrayList<MFunction>();
 		List<Integer> id_list = db.findFunctionIds();
 		if (id_list != null) {
-			for (int i = 0; i < id_list.size(); i++) {
+			for (int i = 0; i < id_list.size(); i++) {/////
 				func_list.add(new MFunction(db.findFunctionById(id_list.get(i)), ctx));
 			}
 		}
 		return func_list;
+	}
+
+	public static boolean delFunc(Context context,int index,List<MFunction> list)
+	{
+		try {
+			DBHelper db = DBHelper.getInstance(context);
+			db.delFunction(index,list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
 	public static void setCommonFunc(Context ctx,int index,int id){

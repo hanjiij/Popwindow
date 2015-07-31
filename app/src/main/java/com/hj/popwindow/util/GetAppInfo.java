@@ -7,9 +7,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 
-import com.hj.popwindow.Config;
+import com.hj.popwindow.database.data.DateUtils;
 import com.hj.popwindow.datatype.AppInfo;
 
 import java.util.ArrayList;
@@ -59,13 +58,20 @@ public class GetAppInfo {
         List<PackageInfo> packageInfos =
                 packageManager.getInstalledPackages(PackageManager.GET_UNINSTALLED_PACKAGES);
 
-        //获取数据库中所有项的包名，用于匹配
-        Cursor cursor = Util_MyDataBase.GetDatabase(context)
-                .query(Config.APP_TABLE_NAME, new String[]{Config.APP_PACKAGE_NAME}, null, null,
-                        null, null, null);
+//        //获取数据库中所有项的包名，用于匹配
+//        Cursor cursor = Util_MyDataBase.GetDatabase(context)
+//                .query(Config.APP_TABLE_NAME, new String[]{Config.APP_PACKAGE_NAME}, null, null,
+//                        null, null, null);
+//
+//        while (cursor.moveToNext()) {
+//            packs = packs + cursor.getString(0);
+//        }
 
-        while (cursor.moveToNext()) {
-            packs = packs + cursor.getString(0);
+        //获取数据库中所有项的包名，用于匹配
+        List<AppInfo> list1=DateUtils.getApps(context);
+
+        for (int i = 0; i < list1.size(); i++) {
+            packs=packs+list1.get(i).getPackageName();
         }
 
         String packageName;  // 包名
